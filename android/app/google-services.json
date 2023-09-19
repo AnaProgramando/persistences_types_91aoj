@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "543496762022",
+    "project_id": "persistences-types-91aoj",
+    "storage_bucket": "persistences-types-91aoj.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543496762022:android:c8790b8d656da507bbba67",
+        "android_client_info": {
+          "package_name": "com.example.persistences_types"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLZgy1yZJUwaPlUbVAOHc4EY_6vFYKBqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
