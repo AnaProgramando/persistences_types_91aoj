@@ -1,54 +1,64 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:persistences_types/commons/constants.dart';
-import 'package:persistences_types/commons/list_cars.dart';
 import 'package:persistences_types/commons/list_item.dart';
-import 'package:persistences_types/firebase/model/car.dart';
-import 'package:persistences_types/firebase/screens/form_cars.dart';
-import 'package:persistences_types/floor/daos/book_dao.dart';
-import 'package:persistences_types/floor/database/appDatabase.dart';
-import 'package:persistences_types/floor/models/book.dart';
-import 'package:persistences_types/floor/screens/form_book.dart';
+import 'package:persistences_types/commons/constants.dart';
+import 'package:persistences_types/firebase/models/car.dart';
+import 'package:persistences_types/firebase/screens/form_car.dart';
 
-class LisCarsWidget extends StatefulWidget {
-  const LisCarsWidget({super.key});
+class ListCarsWidget extends StatefulWidget {
+  const ListCarsWidget({super.key});
 
   @override
-  State<LisCarsWidget> createState() => _LisCarsWidgetState();
+  State<ListCarsWidget> createState() => _ListCarsWidgetState();
 }
 
-class _LisCarsWidgetState extends State<LisCarsWidget> {
-  List<Book> books = [];
-  BookDAO? dao;
+class _ListCarsWidgetState extends State<ListCarsWidget> {
 
-  @override
-  void initState(){
-    super.initState();
-  }
+  List<Car> cars = [];
+
   @override
   Widget build(BuildContext context) {
     const title = Text("Carros");
-    final addRoute = CarFormWidget(); 
-
-    List<Car> cars = [];
-
+    final formCar = FormCarWidget();
     return Scaffold(
       appBar: AppBar(
-          title: title,
-          actions: [IconButton(icon: addIcon, onPressed: () {
-            Navigator.push(context, 
-            MaterialPageRoute(builder: (context) => addRoute)).then((cars) => null);
-          })]),
-      body: ListView.separated(
-          itemBuilder: (context, index) {
-            final item = cars[index];
-            return ListCarsItemWidget(marca: item.marca, leading: "1", modelo: item.modelo, onLongPress: _onDeleteBook);
-          },
-          separatorBuilder: (context, index) => Container(),
-          itemCount: cars.length),
+        title: title,
+        actions: [IconButton(
+          icon: addIcon,
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => formCar));
+          })],),
+      body: buildList(context),
     );
   }
 
-  _onDeleteBook(){
+  Widget buildList(BuildContext context){
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection("cars").snapshots(),
+      builder: (context, snapshot){
+        if(!snapshot.hasData) return const LinearProgressIndicator();
+        if(snapshot.data == null){
+          return const Text("Nenhum carro encontrado!");
+        }else{
+          return buildListView(context, snapshot.data!.docs);
+        }
+      });
+  }
 
+  Widget buildListView(BuildContext context, List<QueryDocumentSnapshot> snapshots){
+    return ListView(
+      padding: const EdgeInsets.only(top: 30),
+      children: snapshots.map((data) => _buildItem(context, data)).toList(),
+    );
+  }
+
+  Widget _buildItem(BuildContext context, QueryDocumentSnapshot data){
+    Car c = Car.fromSnapshot(data);
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: ListItemWidget(leading: "", title: c.marca, subtitle: 
+        c.modelo,onLongPress: (){
+
+        }));
   }
 }
